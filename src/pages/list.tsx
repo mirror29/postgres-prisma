@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import prisma from "../lib/prisma";
 
 export default function Table() {
-  useEffect(async () => {
-    const users = await prisma.users.findMany();
-    console.log(users);
-  }, []);
+  // useEffect(async () => {
+  //   const users = await prisma.users.findMany();
+  //   console.log(users);
+  // }, []);
+
+  const users = [];
 
   return (
     <div className="bg-white/30 p-12 shadow-xl ring-1 ring-gray-900/5 rounded-lg backdrop-blur-lg max-w-xl mx-auto w-full">
