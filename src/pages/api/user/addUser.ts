@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/src/lib/prisma";
+import prisma from "lib/prisma";
 
 export default async function addUser(_req: NextApiRequest, _res: NextApiResponse) {
   const user = await prisma.users.create({
