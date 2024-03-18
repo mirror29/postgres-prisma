@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../lib/prisma";
+import prisma from "@/src/lib/prisma";
 
-export default async function user(
+export default async function findUser(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
