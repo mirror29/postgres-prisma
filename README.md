@@ -17,13 +17,13 @@ Simple Next.js template that uses [Vercel Postgres](https://vercel.com/postgres)
 
 ### Clone and Deploy
 
-Once that's done, copy the .env.example file in this directory to .env.local (which will be ignored by Git):
+Once that's done, copy the .env.example file in this directory to .env.development.local (which will be ignored by Git):
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env.development.local
 ```
 
-Then open `.env.local` and set the environment variables to match the ones in your Vercel Storage Dashboard.
+Then open .env.development.local and set the environment variables to match the ones in your Vercel Storage Dashboard.
 
 Next, run Next.js in development mode:
 
