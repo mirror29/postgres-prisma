@@ -1,12 +1,12 @@
 {
   "name": "postgres-prisma",
-  "version": "0.2.0",
-  "author": "Solana Maintainers <maintainers@solana.foundation>",
+  "version": "0.1.0",
+  "author": "mirror29 <926320181@qq.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "prisma generate && next dev",
-    "build": "prisma generate && prisma db push --force-reset && prisma db seed && next build",
+    "build": "prisma generate && prisma db push && prisma db seed && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -24,7 +24,7 @@
     "@solana/web3.js": "^1.73.0",
     "@tailwindcss/typography": "^0.5.9",
     "ahooks": "^3.7.10",
-    "daisyui": "^1.24.3",
+    "daisyui": "^4.7.3",
     "date-fns": "^2.29.3",
     "immer": "^9.0.12",
     "next": "^14.1.3",
@@ -34,7 +34,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.2",
-    "zustand": "^3.6.9"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
