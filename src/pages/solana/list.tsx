@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import prisma from "../lib/prisma";
+import prisma from "../../lib/prisma";
 
 export default function Table() {
   // useEffect(async () => {

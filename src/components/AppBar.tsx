@@ -56,12 +56,12 @@ export const AppBar: React.FC = () => {
           <div className="hidden md:inline-flex align-items-center justify-items gap-6">
           <NavElement
             label="Home"
-            href="/"
+            href="/solana"
             navigationStarts={() => setIsNavOpen(false)}
           />
           <NavElement
             label="Basics"
-            href="/basics"
+            href="/solana/basics"
             navigationStarts={() => setIsNavOpen(false)}
           />
           <WalletMultiButtonDynamic className="btn-ghost btn-sm rounded-btn text-lg mr-6 " />
