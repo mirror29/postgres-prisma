@@ -1,17 +1,24 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import { HomeView } from "../../views";
+import { ConnectKitButton } from "connectkit";
+import EthLayout from "../../components/EthLayout";
+import { useAccount, useEnsName } from "wagmi";
 
-const Home: NextPage = (props) => {
-  return (
-    <div>
-      <Head>
-        <title>eth demo</title>
-        <meta name="description" content="eth demo" />
-      </Head>
-      welcome eth demo
-    </div>
-  );
+// // Make sure that this component is wrapped with ConnectKitProvider
+const MyComponent = () => {
+  const { address, isConnecting, isDisconnected } = useAccount();
+  if (isConnecting) return <div>Connecting...</div>;
+  if (isDisconnected) return <div>Disconnected</div>;
+  return <div>Connected Wallet: {address}</div>;
 };
 
-export default Home;
+export default function Home() {
+  return (
+    <div>
+        <ConnectKitButton />
+        <MyComponent />
+    </div>
+  );
+}
+
+Home.getLayout = function getLayout(page) {
+  return <EthLayout>{page}</EthLayout>;
+};
