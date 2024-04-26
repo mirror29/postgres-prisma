@@ -39,9 +39,6 @@ export const RequestAirdrop: FC = () => {
       });
 
       getUserSOLBalance(publicKey, connection);
-      const res = await fetch("/api/user");
-      const data = await res.json();
-      console.log(data);
     } catch (error: any) {
       notify({
         type: "error",

@@ -17,3 +17,19 @@ model users {
   walletAddress String   @unique
   createdAt     DateTime @default(now())
 }
+
+model miro_eth {
+  id            Int      @id @default(autoincrement())
+  walletAddress String   @unique
+  miroNum       Int
+  lastTime      DateTime
+  createdAt     DateTime @default(now())
+}
+
+model miro_sol {
+  id            Int      @id @default(autoincrement())
+  walletAddress String   @unique
+  miroNum       Int
+  lastTime      DateTime
+  createdAt     DateTime @default(now())
+}

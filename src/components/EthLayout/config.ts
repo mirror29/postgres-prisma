@@ -1,15 +1,25 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, base, zora, linea } from "wagmi/chains";
 import { getDefaultConfig } from "connectkit";
+import { type Chain } from "viem";
+
+// Choose which chains you'd like to show
+const chains = [sepolia, mainnet, linea, base, zora] as readonly [
+  Chain,
+  ...Chain[]
+];
 
 export const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
-    chains: [mainnet],
+    chains,
     transports: {
       // RPC URL for each chain
-      [mainnet.id]: http(),
-      [sepolia.id]: http(),
+      [sepolia.id]: http(sepolia.rpcUrls.default.http[0]),
+      [mainnet.id]: http(mainnet.rpcUrls.default.http[0]),
+      [linea.id]: http(linea.rpcUrls.default.http[0]),
+      [base.id]: http(base.rpcUrls.default.http[0]),
+      [zora.id]: http(zora.rpcUrls.default.http[0]),
     },
 
     // Required API Keys

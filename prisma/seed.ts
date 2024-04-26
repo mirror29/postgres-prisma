@@ -1,16 +1,16 @@
 import prisma from "../src/lib/prisma";
 
 async function main() {
-  const response = await Promise.all([
-    prisma.users.upsert({
-      where: { walletAddress: "rauchg@vercel.com" },
-      update: {},
-      create: {
-        name: "Guillermo Rauch",
-        walletAddress: "rauchg@vercel.com",
-      },
-    }),
-  ]);
+  // await Promise.all([
+  //   prisma.users.upsert({
+  //     where: { walletAddress: "rauchg@vercel.com" },
+  //     update: {},
+  //     create: {
+  //       name: "Guillermo Rauch",
+  //       walletAddress: "rauchg@vercel.com",
+  //     },
+  //   }),
+  // ]);
 }
 main()
   .then(async () => {
