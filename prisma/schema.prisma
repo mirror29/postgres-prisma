@@ -20,16 +20,16 @@ model users {
 
 model miro_eth {
   id            Int      @id @default(autoincrement())
-  walletAddress String   @unique
-  miroNum       Int
-  lastTime      DateTime
-  createdAt     DateTime @default(now())
+  walletAddress String   @unique // 钱包地址
+  miroNum       Int // miro数量，初始创建时获取2个，后续每日签到获取2个
+  lastTime      DateTime // 最后获取时间
+  createdAt     DateTime @default(now()) // 用户创建时间
 }
 
 model miro_sol {
   id            Int      @id @default(autoincrement())
-  walletAddress String   @unique
-  miroNum       Int
-  lastTime      DateTime
-  createdAt     DateTime @default(now())
+  walletAddress String   @unique // 钱包地址
+  miroNum       Int // miro数量，初始创建时获取2个，后续每日签到获取2个
+  lastTime      DateTime // 最后获取时间
+  createdAt     DateTime @default(now()) // 用户创建时间
 }

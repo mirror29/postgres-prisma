@@ -3,31 +3,42 @@ import EthLayout from '../../components/EthLayout'
 import { useAccount, useEnsName } from 'wagmi'
 import { useMemoizedFn } from 'ahooks'
 import { notify } from '../../utils/notifications'
-
-// // Make sure that this component is wrapped with ConnectKitProvider
-// const MyComponent = () => {
-//   const { address, isConnecting, isDisconnected } = useAccount();
-//   if (isConnecting) return <div>Connecting...</div>;
-//   if (isDisconnected) return <div>Disconnected</div>;
-//   return <div>Connected Wallet: {address}</div>;
-// };
+import { useRef, useState } from 'react'
 
 export default function Home() {
-  const { address} = useAccount()
+  const { address } = useAccount()
+
+  const [getBtnLoading, setGetBtnLoading] = useState(false)
+  const userInfo = useRef({
+    totalUser: 0,
+    Ranking: 0,
+    miroNum: 0,
+    ethNum: 0,
+  })
 
   const getMiro = useMemoizedFn(async () => {
     if (!address) {
       notify({ type: 'error', message: `请先连接钱包!` })
     }
+    if (!!getBtnLoading) return
 
-    const res = await fetch('/api/eth/getMiro', {
+    setGetBtnLoading(true)
+    const response = await fetch('/api/eth/getMiro', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ address, miroNum: 2 }),
     })
-    console.log(res)
+    const data = await response.json()
+
+    if (data?.code === -1) {
+      notify({ type: 'error', message: data.msg })
+    } else {
+      userInfo.current.miroNum = data.miroNum
+    }
+
+    setGetBtnLoading(false)
   })
 
   return (
@@ -40,7 +51,7 @@ export default function Home() {
           <div className="stats shadow">
             <div className="stat">
               <div className="stat-title">总用户数</div>
-              <div className="stat-value">12</div>
+              <div className="stat-value">{userInfo.current.totalUser}</div>
             </div>
             <div className="stat">
               <div className="stat-title">你的排名</div>
@@ -48,7 +59,7 @@ export default function Home() {
             </div>
             <div className="stat">
               <div className="stat-title">miro 数量</div>
-              <div className="stat-value">31000</div>
+              <div className="stat-value">{userInfo.current.miroNum}</div>
             </div>
             <div className="stat">
               <div className="stat-title">eth 数量</div>
@@ -62,7 +73,7 @@ export default function Home() {
           <div className="text-gray-900 mt-4">
             <span className="w-1/2">获取miro：</span>
             <button className="btn btn-neutral" onClick={getMiro}>
-              2 miro
+              {getBtnLoading && <span className="loading loading-spinner"></span>}2 miro
             </button>
           </div>
         </div>
