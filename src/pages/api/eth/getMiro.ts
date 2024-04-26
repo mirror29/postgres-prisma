@@ -8,7 +8,7 @@ export default async function getMiro(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'POST') {
-    const { address,miroNum } = req.body
+    const { address, miroNum } = req.body
     try {
       // 先查找是否存在
       const existingRecord = await prisma.miro_eth.findUnique({
@@ -19,14 +19,13 @@ export default async function getMiro(req: NextApiRequest, res: NextApiResponse)
 
       res.status(200).json({ message: `Hello, ${existingRecord}!` })
 
-      console.log(existingRecord)
-
       if (!existingRecord) {
         // 不存在则新增
         await prisma.miro_eth.create({
           data: {
             walletAddress: address,
-            miroNum
+            miroNum,
+            lastTime: new Date().toLocaleString(),
           },
         })
         console.log(`New record created for address: ${address}`)
