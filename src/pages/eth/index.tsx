@@ -1,20 +1,49 @@
 import { ConnectKitButton } from 'connectkit'
 import EthLayout from '../../components/EthLayout'
-import { useAccount, useEnsName } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { useMemoizedFn } from 'ahooks'
 import { notify } from '../../utils/notifications'
-import { useRef, useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 
 export default function Home() {
   const { address } = useAccount()
+  const { data: balance, isLoading } = useBalance({
+    address,
+  })
 
   const [getBtnLoading, setGetBtnLoading] = useState(false)
-  const userInfo = useRef({
+  const [userInfo, setUserInfo] = useState({
     totalUser: 0,
-    Ranking: 0,
+    rank: 0,
     miroNum: 0,
     ethNum: 0,
   })
+
+  const getUserInfo = useMemoizedFn(async () => {
+    if (!address) return
+
+    const response = await fetch('/api/eth/getUserInfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ address }),
+    })
+    const data = await response.json()
+
+    const { miroNum, rank, totalUser } = data
+    setUserInfo({
+      ...userInfo,
+      miroNum,
+      rank,
+      totalUser,
+    })
+  })
+
+  useLayoutEffect(() => {
+    if (!address) return
+    getUserInfo()
+  }, [address, getUserInfo])
 
   const getMiro = useMemoizedFn(async () => {
     if (!address) {
@@ -35,7 +64,10 @@ export default function Home() {
     if (data?.code === -1) {
       notify({ type: 'error', message: data.msg })
     } else {
-      userInfo.current.miroNum = data.miroNum
+      setUserInfo({
+        ...userInfo,
+        miroNum: data.miroNum,
+      })
     }
 
     setGetBtnLoading(false)
@@ -51,19 +83,21 @@ export default function Home() {
           <div className="stats shadow">
             <div className="stat">
               <div className="stat-title">总用户数</div>
-              <div className="stat-value">{userInfo.current.totalUser}</div>
+              <div className="stat-value">{userInfo.totalUser}</div>
             </div>
             <div className="stat">
               <div className="stat-title">你的排名</div>
-              <div className="stat-value"># 1</div>
+              <div className="stat-value"># {userInfo.rank}</div>
             </div>
             <div className="stat">
               <div className="stat-title">miro 数量</div>
-              <div className="stat-value">{userInfo.current.miroNum}</div>
+              <div className="stat-value">{userInfo.miroNum}</div>
             </div>
             <div className="stat">
               <div className="stat-title">eth 数量</div>
-              <div className="stat-value">0.0001</div>
+              <div className="stat-value">
+                {balance?.formatted ? (+balance?.formatted)?.toFixed(6) : 0.0}
+              </div>
             </div>
           </div>
           <div className="text-gray-900 mt-4">
