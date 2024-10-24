@@ -48,6 +48,7 @@ export default function Home() {
   const getMiro = useMemoizedFn(async () => {
     if (!address) {
       notify({ type: 'error', message: `请先连接钱包!` })
+      setGetBtnLoading(false)
     }
     if (!!getBtnLoading) return
 
