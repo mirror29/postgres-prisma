@@ -102,8 +102,14 @@ export default function Home() {
             </div>
           </div>
           <div className="text-gray-900 mt-4">
-            <span className="w-1/2">领取水龙头：</span>
-            <button className="btn btn-neutral">test</button>
+            <span className="w-1/2">水龙头获取：</span>
+            <a
+              href="https://www.alchemy.com/faucets/ethereum-sepolia"
+              className="btn btn-neutral"
+              target="_blank"
+            >
+              sepolia
+            </a>
           </div>
           <div className="text-gray-900 mt-4">
             <span className="w-1/2">获取miro：</span>
