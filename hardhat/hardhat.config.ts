@@ -18,13 +18,13 @@ const SEPOLIA_PRIVATE_KEY = vars.get('SEPOLIA_PRIVATE_KEY')
 
 const ETHERSCAN_API_KEY = vars.get('ETHERSCAN_API_KEY')
 
-task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners()
+// task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
+//   const accounts = await hre.ethers.getSigners()
 
-  for (const account of accounts) {
-    console.log(account.address)
-  }
-})
+//   for (const account of accounts) {
+//     console.log(account.address)
+//   }
+// })
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'sepolia',
