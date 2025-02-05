@@ -1,4 +1,5 @@
 import { HardhatUserConfig, task, vars } from 'hardhat/config'
+import "@nomicfoundation/hardhat-verify";
 import '@nomicfoundation/hardhat-toolbox'
 
 // Go to https://infura.io, sign up, create a new API key
