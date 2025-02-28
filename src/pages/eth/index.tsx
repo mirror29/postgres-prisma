@@ -1,5 +1,7 @@
 import { ConnectKitButton } from 'connectkit'
 import EthLayout from '../../components/EthLayout'
+import Web3 from 'web3'
+import { getMiroTokenContract } from '../../lib/contracts/MiroToken'
 import { useAccount, useBalance } from 'wagmi'
 import { useMemoizedFn } from 'ahooks'
 import { notify } from '../../utils/notifications'
@@ -10,7 +12,6 @@ export default function Home() {
   const { data: balance, isLoading } = useBalance({
     address,
   })
-
   const [getBtnLoading, setGetBtnLoading] = useState(false)
   const [userInfo, setUserInfo] = useState({
     totalUser: 0,
@@ -18,6 +19,8 @@ export default function Home() {
     miroNum: 0,
     ethNum: 0,
   })
+  const [web3, setWeb3] = useState<Web3 | null>(null)
+  const [userClaims, setUserClaims] = useState(0)
 
   const getUserInfo = useMemoizedFn(async () => {
     if (!address) return
@@ -43,6 +46,19 @@ export default function Home() {
   useLayoutEffect(() => {
     if (!address) return
     getUserInfo()
+
+    const connectToMetamask = async () => {
+      if (typeof window.ethereum !== 'undefined') {
+        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        const web3Instance = new Web3(window.ethereum)
+        const accounts = await web3Instance.eth.getAccounts()
+        setWeb3(web3Instance)
+      } else {
+        notify({ type: 'error', message: 'Metamask not detected' })
+      }
+    }
+
+    connectToMetamask()
   }, [address, getUserInfo])
 
   const getMiro = useMemoizedFn(async () => {
@@ -53,6 +69,23 @@ export default function Home() {
     if (!!getBtnLoading) return
 
     setGetBtnLoading(true)
+
+    try {
+      const contract = getMiroTokenContract(web3)
+      const claimMethod = contract.methods.claim()
+      const gas = await claimMethod.estimateGas({ from: address })
+      const tx = await claimMethod.send({ from: address, gas })
+
+      const userClaims = await contract.methods.userClaims(address).call()
+      setUserClaims(parseInt(userClaims))
+    } catch (error) {
+      if (error instanceof Error) {
+        notify({ type: 'error', message: error.message })
+      } else {
+        notify({ type: 'error', message: 'An unknown error occurred' })
+      }
+    }
+
     const response = await fetch('/api/eth/getMiro', {
       method: 'POST',
       headers: {

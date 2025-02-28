@@ -1,16 +1,23 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from 'lib/prisma'
 
+interface ResponseData {
+  message?: string
+  transactionHash?: string
+  userClaims?: number
+  error?: string
+}
+
 /** 领取miro */
 export default async function getMiro(req: NextApiRequest, res: NextApiResponse) {
-  if (!req.body.address) {
-    throw new Error('address is required')
+  const { address, miroNum } = req.body
+  if (!address) {
+    return res.status(400).json({ error: 'Wallet address and signed data are required' })
   }
 
   if (req.method === 'POST') {
-    const { address, miroNum } = req.body
     try {
-      // 先查找是否存在
+      // 先查找用户是否存在
       const existingRecord = await prisma.miro_eth.findUnique({
         where: {
           walletAddress: address,
@@ -33,7 +40,8 @@ export default async function getMiro(req: NextApiRequest, res: NextApiResponse)
         const lastTime = existingRecord.lastTime?.toISOString().slice(0, 10)
 
         if (currentDate > lastTime) {
-          // 如果当前时间大于 lastTime , 则更新 miroNum 字段
+
+          // 更新数据库，如果当前时间大于 lastTime , 则更新 miroNum 字段
           const miroNum = existingRecord.miroNum + 2
           await prisma.miro_eth.update({
             where: {
@@ -50,7 +58,12 @@ export default async function getMiro(req: NextApiRequest, res: NextApiResponse)
         }
       }
     } catch (error) {
-      console.error(`Error upserting miro_eth record: ${error}`)
+      // console.error(`Error upserting miro_eth record: ${error}`)
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message })
+      } else {
+        res.status(500).json({ error: 'An unknown error occurred' })
+      }
     } finally {
       await prisma.$disconnect()
     }
