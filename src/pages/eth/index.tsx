@@ -3,14 +3,18 @@ import EthLayout from '../../components/EthLayout'
 import Web3 from 'web3'
 import { getMiroTokenContract } from '../../lib/contracts/MiroToken'
 import { useAccount, useBalance } from 'wagmi'
+import { sepolia } from '@wagmi/core/chains' // 从 @wagmi/core/chains 导入 sepolia
 import { useMemoizedFn } from 'ahooks'
 import { notify } from '../../utils/notifications'
 import { useState, useLayoutEffect } from 'react'
+import { formatEther } from 'viem'
 
 export default function Home() {
   const { address } = useAccount()
-  const { data: balance, isLoading } = useBalance({
+  // 指定网络为 Sepolia
+  const { data: sepoliaBalance, isLoading } = useBalance({
     address,
+    chainId: sepolia.id,
   })
   const [getBtnLoading, setGetBtnLoading] = useState(false)
   const [userInfo, setUserInfo] = useState({
@@ -20,7 +24,7 @@ export default function Home() {
     ethNum: 0,
   })
   const [web3, setWeb3] = useState<Web3 | null>(null)
-  const [userClaims, setUserClaims] = useState(0)
+  const [miroBalance, setMiroBalance] = useState(0)
 
   const getUserInfo = useMemoizedFn(async () => {
     if (!address) return
@@ -42,6 +46,10 @@ export default function Home() {
       totalUser,
     })
   })
+
+  useLayoutEffect(() => {
+    console.log('sepoliaBalance', sepoliaBalance)
+  }, [sepoliaBalance])
 
   useLayoutEffect(() => {
     if (!address) return
@@ -73,11 +81,27 @@ export default function Home() {
     try {
       const contract = getMiroTokenContract(web3)
       const claimMethod = contract.methods.claim()
-      const gas = await claimMethod.estimateGas({ from: address })
+      const gas = await claimMethod.estimateGas({ from: address }) as unknown as string
       const tx = await claimMethod.send({ from: address, gas })
 
       const userClaims = await contract.methods.userClaims(address).call()
-      setUserClaims(parseInt(userClaims))
+      const response = await fetch('/api/eth/getMiro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address, miroNum: 2 }),
+      })
+      const data = await response.json()
+
+      if (data?.code === -1) {
+        notify({ type: 'error', message: data.msg })
+      } else {
+        setUserInfo({
+          ...userInfo,
+          miroNum: data.miroNum,
+        })
+      }
     } catch (error) {
       if (error instanceof Error) {
         notify({ type: 'error', message: error.message })
@@ -86,26 +110,19 @@ export default function Home() {
       }
     }
 
-    const response = await fetch('/api/eth/getMiro', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ address, miroNum: 2 }),
-    })
-    const data = await response.json()
-
-    if (data?.code === -1) {
-      notify({ type: 'error', message: data.msg })
-    } else {
-      setUserInfo({
-        ...userInfo,
-        miroNum: data.miroNum,
-      })
-    }
-
     setGetBtnLoading(false)
   })
+
+  const getMiroBalance = useMemoizedFn(async () => {
+    if (!address || !web3) return
+    const contract = getMiroTokenContract(web3)
+    const balance = await contract.methods.balanceOf(address).call() as string
+    setMiroBalance(parseInt(balance))
+  })
+
+  useLayoutEffect(() => {
+    getMiroBalance()
+  }, [address, web3])
 
   return (
     <div className="h-screen">
@@ -124,14 +141,16 @@ export default function Home() {
               <div className="stat-value"># {userInfo.rank}</div>
             </div>
             <div className="stat">
-              <div className="stat-title">miro 数量</div>
-              <div className="stat-value">{userInfo.miroNum}</div>
+              <div className="stat-title">Sepolia ETH</div>
+              <div className="stat-value">
+                {sepoliaBalance?.value
+                  ? parseFloat(formatEther(sepoliaBalance.value)).toFixed(6)
+                  : 0.0}
+              </div>
             </div>
             <div className="stat">
-              <div className="stat-title">eth 数量</div>
-              <div className="stat-value">
-                {balance?.formatted ? (+balance?.formatted)?.toFixed(6) : 0.0}
-              </div>
+              <div className="stat-title">钱包里的 Miro</div>
+              <div className="stat-value">{miroBalance}</div>
             </div>
           </div>
           <div className="text-gray-900 mt-4">
