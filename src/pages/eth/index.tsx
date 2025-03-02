@@ -81,10 +81,12 @@ export default function Home() {
     try {
       const contract = getMiroTokenContract(web3)
       const claimMethod = contract.methods.claim()
-      const gas = await claimMethod.estimateGas({ from: address }) as unknown as string
+      const gas = (await claimMethod.estimateGas({ from: address })) as unknown as string
       const tx = await claimMethod.send({ from: address, gas })
 
       const userClaims = await contract.methods.userClaims(address).call()
+      console.log(tx,userClaims)
+
       const response = await fetch('/api/eth/getMiro', {
         method: 'POST',
         headers: {
@@ -116,7 +118,7 @@ export default function Home() {
   const getMiroBalance = useMemoizedFn(async () => {
     if (!address || !web3) return
     const contract = getMiroTokenContract(web3)
-    const balance = await contract.methods.balanceOf(address).call() as string
+    const balance = (await contract.methods.balanceOf(address).call()) as string
     setMiroBalance(parseInt(balance))
   })
 
